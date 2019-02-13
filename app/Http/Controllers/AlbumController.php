@@ -7,7 +7,7 @@ use App\Album;
 class AlbumController extends Controller
 {
     public function index(){
-        $albums = Album::with('Photos')->get();
+        $albums = Album::with('Images')->get();
         return view('album.index')->with('albums', $albums);
     }
 
@@ -45,6 +45,8 @@ class AlbumController extends Controller
         return redirect('/')->with('success', 'Album Created');
     }
     public function show($id){
-        return 123;
+        
+        $album = Album::with('Images')->find($id);
+        return view('album.show')->with('album', $album);
     }
 }
