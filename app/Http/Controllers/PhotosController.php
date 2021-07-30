@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\Storage;
 use App\Image;
 
 class PhotosController extends Controller
-{    
+{
     public function create($album_id){
       return view('photos.create')->with('album_id',$album_id);
     }
     public function store(Request $request){
         $this->validate($request,[
             'title' => 'required',
-            'photo' => 'image|max:1999'
+            'photo' => 'required'
         ]);
 
         //Get file name with extension
@@ -22,16 +22,16 @@ class PhotosController extends Controller
 
         //Get file name without extension
         $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-        
+
         //Get file extension
         $extension = $request->file('photo')->getClientOriginalExtension();
 
-        //Create new file name    
-        $fileNameToStore = $fileName.'_'.time().'.'.$extension;   
-        
+        //Create new file name
+        $fileNameToStore = $fileName.'_'.time().'.'.$extension;
+
         //Store to Database as path
         $imagePath = $request->file('photo')->storeAs('public/photos/'.$request->input('album_id'), $fileNameToStore);
-        
+
         $photo = new Image;
         $photo->album_id = $request->input('album_id');
         $photo->title = $request->input('title');
@@ -52,7 +52,7 @@ class PhotosController extends Controller
         if(storage::delete('public/photos/'.$photo->album_id.'/'.$photo->photo)){
             $photo->delete();
         }
-       
+
         return redirect('/albums/'.$photo->album_id)->with('success', 'Photo Deleted');
     }
 }

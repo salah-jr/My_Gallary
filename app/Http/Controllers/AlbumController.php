@@ -16,10 +16,10 @@ class AlbumController extends Controller
     }
 
     public function store(Request $request){
-        
+
         $this->validate($request,[
             'name' => 'required',
-            'cover_image' => 'image|max:1999'
+            'cover_image' => 'required'
         ]);
 
         //Get file name with extension
@@ -27,16 +27,16 @@ class AlbumController extends Controller
 
         //Get file name without extension
         $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-        
+
         //Get file extension
         $extension = $request->file('cover_image')->getClientOriginalExtension();
 
-        //Create new file name    
-        $fileNameToStore = $fileName.'_'.time().'.'.$extension;   
-        
+        //Create new file name
+        $fileNameToStore = $fileName.'_'.time().'.'.$extension;
+
         //Store to Database as path
         $imagePath = $request->file('cover_image')->storeAs('public/storage/album_covers', $fileNameToStore);
-        
+
         $album = new Album;
         $album->name = $request->input('name');
         $album->description = $request->input('description');
@@ -45,7 +45,7 @@ class AlbumController extends Controller
         return redirect('/')->with('success', 'Album Created');
     }
     public function show($id){
-        
+
         $album = Album::with('Images')->find($id);
         return view('album.show')->with('album', $album);
     }
